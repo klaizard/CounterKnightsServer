@@ -80,7 +80,7 @@ function findItemInCatalogItems(catalogItems, itemid)
               return catalogItems[i];
         }
     }
-  	return null;
+	return null;
 }
         
 handlers.customCoupon = function (args)
@@ -91,12 +91,12 @@ handlers.customCoupon = function (args)
   	var couponListjson = JSON.parse(couponList);
   	var couponInfo;
   	for (var j = 0; j < couponListjson.coupons.length; ++j)
-    {
-      	// 들어온 코드와 동일한 쿠폰 검색
-      	var oneCoupon = couponListjson.coupons[j];
-      	if (oneCoupon.code == args.couponCode)
-          	couponInfo = oneCoupon;
-    }
+	{
+		// 들어온 코드와 동일한 쿠폰 검색
+		var oneCoupon = couponListjson.coupons[j];
+		if (oneCoupon.code == args.couponCode)
+			couponInfo = oneCoupon;
+	}
   
   	// 검색된 쿠폰이 없다
   	if (null == couponInfo)
