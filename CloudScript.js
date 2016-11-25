@@ -111,7 +111,7 @@ handlers.customCoupon = function (args)
   	var finalUsedCouponArray;
   	if (null == usedCouponData)
     {
-      	// 쿠폰 사용 정보가 없다면 새로 만들어서 넣어준다
+      	// 쿠폰 사용 정보가 없다면 새로 배열을 만들어서 넣어준다
       	finalUsedCouponArray = [ couponInfo.index ];
     }
   	else
