@@ -7,16 +7,16 @@
 var UD_KEY_USED_COUPON = "UsedCoupon";
 var TD_KEY_COUPONLIST = "CouponList";
 
-// Ä¿·±½ÃÀÇ ³²Àº ¾ç Ã¤Å©¿Í °á°ú°ªÀ» µ¿½Ã¿¡ Ã³¸®ÇÏ´Â ÇÔ¼ö
+// ì»¤ëŸ°ì‹œì˜ ë‚¨ì€ ì–‘ ì±„í¬ì™€ ê²°ê³¼ê°’ì„ ë™ì‹œì— ì²˜ë¦¬í•˜ëŠ” í•¨ìˆ˜
 handlers.checkAndSubtractVirtualCurrency = function (args)
 {
 	var invenResult = server.GetUserInventory({PlayFabId: args.playfabId});
   	var numVirtualCurrency = invenResult.VirtualCurrency[args.code];
   	var vcRechargeTime = invenResult.VirtualCurrencyRechargeTimes[args.code];
-  log.info(invenResult.VirtualCurrencyRechargeTimes);
-  log.info( vcRechargeTime);
+  	//log.info(invenResult.VirtualCurrencyRechargeTimes);
+  	//log.info( vcRechargeTime);
   	var secondsToRecharge = 0;
-  	// ¸®Â÷Áö Å¸ÀÓÀÌ 0 ÀÌ¸é vcRechargeTime ÀÌ null·Î ³Ñ¾î¿À´Âµí
+  	// ë¦¬ì°¨ì§€ íƒ€ì„ì´ 0 ì´ë©´ vcRechargeTime ì´ nullë¡œ ë„˜ì–´ì˜¤ëŠ”ë“¯
   	if (null != vcRechargeTime)
       	secondsToRecharge = vcRechargeTime.SecondsToRecharge;
  	if (numVirtualCurrency - args.amount < 0)
@@ -26,7 +26,7 @@ handlers.checkAndSubtractVirtualCurrency = function (args)
   	return  {check: true, numModified: subCurrencyResult.Balance, rechargeTime: secondsToRecharge};
 }
 
-// Ä¿·±½Ã³¢¸® ±³È¯(±¸ÀÔ°³³ä)
+// ì»¤ëŸ°ì‹œë¼ë¦¬ êµí™˜(êµ¬ì…ê°œë…)
 handlers.tradeVirtualCurrency = function (args)
 {
   	var invenResult = server.GetUserInventory({PlayFabId: args.playfabId});
@@ -40,13 +40,13 @@ handlers.tradeVirtualCurrency = function (args)
   	return  {check: true, numModifiedFrom: subCurrencyResult.Balance, numModifiedTo: addCurrencyResult.Balance};
 }
 
-// ÄíÆù »ç¿ë -> Ä«´Ş·Î±×¿¡¼­ ÇØ´ç ¾ÆÀÌÅÛ °Ë»ö -> Ä¿·±½Ã¿¡ Ãß°¡ 
+// ì¿ í° ì‚¬ìš© -> ì¹´ë‹¬ë¡œê·¸ì—ì„œ í•´ë‹¹ ì•„ì´í…œ ê²€ìƒ‰ -> ì»¤ëŸ°ì‹œì— ì¶”ê°€ 
 function redeemCouponProcess(couponCode, playfabId)
 {
-    // ÄíÆùÀÌ »ç¿ëµÇ¸é ¸®ÅÏ°ªÀ¸·Î ÄÚµå¶óµµ ÁÖ´Â°Ô ¾Æ´Ï¶ó °Á ÀÍ¼Á¼Ç ³² -_- Å¬¶óÂÊ¿¡¼± ÄÚµå¸¦ Ã£À»¼ö ÀÖÀ¸´Ï ÇØ´ç ¿¡·¯Ã³¸®´Â Å¬¶ó¿¡¼­ ÇÔ
+    // ì¿ í°ì´ ì‚¬ìš©ë˜ë©´ ë¦¬í„´ê°’ìœ¼ë¡œ ì½”ë“œë¼ë„ ì£¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ê± ìµì…‰ì…˜ ë‚¨ -_- í´ë¼ìª½ì—ì„  ì½”ë“œë¥¼ ì°¾ì„ìˆ˜ ìˆìœ¼ë‹ˆ í•´ë‹¹ ì—ëŸ¬ì²˜ë¦¬ëŠ” í´ë¼ì—ì„œ í•¨
     var result = server.RedeemCoupon({CouponCode: couponCode, PlayFabId: playfabId});
 
-    // ÄíÆùÀÇ ¾ÆÀÌÅÛÀ» Ä«´Ş·Î±×¿¡¼­ °Ë»ö. 
+    // ì¿ í°ì˜ ì•„ì´í…œì„ ì¹´ë‹¬ë¡œê·¸ì—ì„œ ê²€ìƒ‰. 
     for (var i = 0; i < result.GrantedItems.length; ++i)
     {
         var itemInstance = result.GrantedItems[i];
@@ -56,7 +56,7 @@ function redeemCouponProcess(couponCode, playfabId)
 
         var foundItem = findItemInCatalogItems(catalog.Catalog, itemInstance.ItemId);
 
-        // ÇØ´ç ¾ÆÀÌÅÛÀÇ price ¶õÀ» º¸»óÀ¸·Î ÁØ´Ù.
+        // í•´ë‹¹ ì•„ì´í…œì˜ price ë€ì„ ë³´ìƒìœ¼ë¡œ ì¤€ë‹¤.
         if (null != foundItem && null != foundItem.VirtualCurrencyPrices)
         {
             for (var vcCode in foundItem.VirtualCurrencyPrices)
@@ -85,33 +85,33 @@ function findItemInCatalogItems(catalogItems, itemid)
         
 handlers.customCoupon = function (args)
 {
-  	// Å¸ÀÌÆ² µ¥ÀÌÅÍ¿¡¼­ ÀÓÀÇ ÁöÁ¤ÇÑ ÄíÆù ¸®½ºÆ®¸¦ ¾ò¾î¿È
+  	// íƒ€ì´í‹€ ë°ì´í„°ì—ì„œ ì„ì˜ ì§€ì •í•œ ì¿ í° ë¦¬ìŠ¤íŠ¸ë¥¼ ì–»ì–´ì˜´
   	var titleData = server.GetTitleInternalData({ Keys: null });
   	var couponList = titleData.Data[TD_KEY_COUPONLIST];
   	var couponListjson = JSON.parse(couponList);
   	var couponInfo;
   	for (var j = 0; j < couponListjson.coupons.length; ++j)
     {
-      	// µé¾î¿Â ÄÚµå¿Í µ¿ÀÏÇÑ ÄíÆù °Ë»ö
+      	// ë“¤ì–´ì˜¨ ì½”ë“œì™€ ë™ì¼í•œ ì¿ í° ê²€ìƒ‰
       	var oneCoupon = couponListjson.coupons[j];
       	if (oneCoupon.code == args.couponCode)
           	couponInfo = oneCoupon;
     }
   
-  	// °Ë»öµÈ ÄíÆùÀÌ ¾ø´Ù
+  	// ê²€ìƒ‰ëœ ì¿ í°ì´ ì—†ë‹¤
   	if (null == couponInfo)
     {
-      	// ¸®µõÄíÆùÀ¸·Î ½Ãµµ
+      	// ë¦¬ë”¤ì¿ í°ìœ¼ë¡œ ì‹œë„
       	return redeemCouponProcess(args.couponCode, args.playfabId);
     }
   
-  	// ÄíÆù ÀÎµ¦½º¸¦ ÀÌ¿ëÇØ¼­ ÀÌ À¯Àú°¡ ÀÌ¹Ì »ç¿ëÇÑ ÄíÆùÀÎÁö È®ÀÎ
+  	// ì¿ í° ì¸ë±ìŠ¤ë¥¼ ì´ìš©í•´ì„œ ì´ ìœ ì €ê°€ ì´ë¯¸ ì‚¬ìš©í•œ ì¿ í°ì¸ì§€ í™•ì¸
   	var userinternalData = server.GetUserInternalData({PlayFabId: args.playfabId, Keys: UD_KEY_USED_COUPON});
   	var usedCouponData = findInUserInternalData(userinternalData.Data, UD_KEY_USED_COUPON);
   	var finalUsedCouponArray;
   	if (null == usedCouponData)
     {
-      	// ÄíÆù »ç¿ë Á¤º¸°¡ ¾ø´Ù¸é »õ·Î ¸¸µé¾î¼­ ³Ö¾îÁØ´Ù
+      	// ì¿ í° ì‚¬ìš© ì •ë³´ê°€ ì—†ë‹¤ë©´ ìƒˆë¡œ ë§Œë“¤ì–´ì„œ ë„£ì–´ì¤€ë‹¤
       	finalUsedCouponArray = [ couponInfo.index ];
     }
   	else
@@ -119,20 +119,20 @@ handlers.customCoupon = function (args)
       	finalUsedCouponArray = JSON.parse(usedCouponData.Value);
       	for (var i = 0; i < finalUsedCouponArray.length; ++i)
         {
-          	// ÀÌ¹Ì ÀÌ ÄíÆùÀ» »ç¿ëÇß´Ù. ¹Ù·Î ¸®ÅÏ
+          	// ì´ë¯¸ ì´ ì¿ í°ì„ ì‚¬ìš©í–ˆë‹¤. ë°”ë¡œ ë¦¬í„´
           	if (couponInfo.index == finalUsedCouponArray[i])
               	return {rewardVC: null, rewardBalance: 0};
         }
-      	// ÄíÆùÀ» »ç¿ëÇÑ°ÍÀ¸·Î Ç¥½ÃÇÑ´Ù.
+      	// ì¿ í°ì„ ì‚¬ìš©í•œê²ƒìœ¼ë¡œ í‘œì‹œí•œë‹¤.
       	finalUsedCouponArray.push(couponInfo.index);
     }
   
-  	// ÄíÆù »ç¿ë Ç¥½Ã À¯Àú µ¥ÀÌÅÍ¿¡ Àû¿ë
+  	// ì¿ í° ì‚¬ìš© í‘œì‹œ ìœ ì € ë°ì´í„°ì— ì ìš©
   	var dataPayload = {};
   	dataPayload[UD_KEY_USED_COUPON] = JSON.stringify(finalUsedCouponArray);
   	server.UpdateUserInternalData({PlayFabId: args.playfabId, Data: dataPayload });
 
-  	// º¸»ó Àû¿ë
+  	// ë³´ìƒ ì ìš©
   	var addCurrencyResult = server.AddUserVirtualCurrency({ PlayFabId: args.playfabId, VirtualCurrency: couponInfo.vccode, Amount: couponInfo.amount });
   	return {rewardVC: couponInfo.vccode, rewardBalance: addCurrencyResult.Balance};
 }
